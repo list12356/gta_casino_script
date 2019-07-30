@@ -47,11 +47,11 @@ def perform_bet():
         time.sleep(1)
         click(413, 329)
         time.sleep(1)
-        for i in range(10):
+        for i in range(12):
             click(1526, 527)
             time.sleep(0.2)
         click(1416, 801)
-        time.sleep(35)
+        time.sleep(40)
         click(939, 1008)
         time.sleep(1)
 
