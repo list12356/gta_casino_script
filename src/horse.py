@@ -35,7 +35,7 @@ def on_release_exit(key):
         pass
 
 def click(x, y):
-    mouse.position = (x/scale, y/scale)
+    mouse.position = (x, y)
     mouse.press(MOUSE_PRIMARY)
     time.sleep(0.5)
     mouse.release(MOUSE_PRIMARY)
