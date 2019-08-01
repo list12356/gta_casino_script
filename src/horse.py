@@ -5,7 +5,8 @@ import ctypes
 from pynput import keyboard
 from pynput.mouse import Button, Controller
 
-MOUSE_PRIMARY = Button.left
+MOUSE_PRIMARY = Button.right
+MOUSE_SECONDARY = Button.left
 mouse = Controller()
 # Need to setup dpi awareness for windows 10!
 awareness = ctypes.c_int()
@@ -47,12 +48,14 @@ def perform_bet():
         time.sleep(1)
         click(413, 329)
         time.sleep(1)
-        for i in range(12):
+        for i in range(15):
             click(1526, 527)
             time.sleep(0.2)
         click(1416, 801)
-        time.sleep(40)
-        click(939, 1008)
+        time.sleep(35)
+        mouse.press(MOUSE_SECONDARY)
+        time.sleep(0.3)
+        mouse.release(MOUSE_SECONDARY)
         time.sleep(1)
 
 def main():
