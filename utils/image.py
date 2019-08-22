@@ -36,7 +36,6 @@ def get_odds_list(img=None):
         except:
             continue
         odds.append(num)
-    print(odds)
     return odds
 
 
