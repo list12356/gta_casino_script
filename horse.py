@@ -9,11 +9,11 @@ from utils.prob import calc_return
 from utils.screen import POS_HORSE1, POS_INC_BET, POS_PLACE_BET, POS_START, POS_CANCEL
 
 # TODO: use config file
-MOUSE_PRIMARY = Button.right
-MOUSE_SECONDARY = Button.left
+MOUSE_PRIMARY = Button.left
+MOUSE_SECONDARY = Button.right
 mouse = Controller()
 VERBOSE = True
-DEBUG = True
+DEBUG = False
 
 def on_press(key):
     pass
