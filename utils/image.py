@@ -47,7 +47,7 @@ def get_number(img):
     # cut at the slash symbol
     corr = cv2.matchTemplate(img, TEMPLATE_NUMBERS["slash"], cv2.TM_CCOEFF_NORMED)
     _, seg_x = np.unravel_index(np.argmax(corr), corr.shape)
-    img = img[:, :seg_x]
+    img = img[:, :seg_x + 1]
     group = cv2.threshold(img, 0, 255,
         cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
  
@@ -64,25 +64,28 @@ def get_number(img):
         # the digit, and resize it to have the same fixed size as
         # the reference OCR-A images
         (x, y, w, h) = cv2.boundingRect(c)
-        roi = group[y:y + h, x:x + w]
-        cv2.rectangle(img2, (x, y), (x + w, y + h), (0,0,255), 2)
+        roi = img[y:y + h, x:x + w]
+        cv2.imwrite('{!s}.png'.format(DEBUG_NUM), roi)
         DEBUG_NUM += 1
+        cv2.rectangle(img2, (x, y), (x + w, y + h), (0,0,255), 2)
  
         # initialize a list of template matching scores    
         scores = {}
  
         # loop over the reference digit name and digit ROI
-        for key, template in TEMPLATE_NUMBERS.items():
+        for key in range(10):
+            template = TEMPLATE_NUMBERS[str(key)]
             # apply correlation-based template matching, take the
             # score, and update the scores list
             roi = cv2.resize(roi, template.shape[::-1])
             score = cv2.matchTemplate(roi, template,
                 cv2.TM_CCOEFF)
-            (_, score, _, _) = cv2.minMaxLoc(score)
-            scores[key] = score
+            score = np.max(score)
+            scores[str(key)] = score
  
         # the classification for the digit ROI will be the reference
         # digit name with the *largest* template matching score
         groupOutput.append(max(scores, key=scores.get))
-    cv2.imwrite('{!s}.png'.format(DEBUG_NUM), img2)
+    # cv2.imwrite('{!s}.png'.format(DEBUG_NUM), img2)
+    # DEBUG_NUM += 1
     return groupOutput
