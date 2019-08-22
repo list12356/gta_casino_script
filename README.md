@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 ### For conda(recommended)
 conda env create -f environment.yml  
-conda activate py37
+conda activate gta_script
 
 ## Usage
 
