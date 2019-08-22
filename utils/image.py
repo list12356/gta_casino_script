@@ -3,9 +3,12 @@ import os
 import cv2
 import numpy as np
 import imutils
+import torch
+
 from imutils import contours
 from PIL import ImageGrab
 
+from model.model import TwoLayerNet
 from utils.screen import ODDS_BOUNDING_BOX
 
 TEMPLATE_NUMBERS = {}
@@ -15,6 +18,9 @@ for filename in os.listdir("./img/templates/"):
     TEMPLATE_NUMBERS[number] = img
 
 DEBUG_NUM = 0
+
+model = TwoLayerNet()
+model.load_state_dict(torch.load("./saved_model"))
 
 def get_odds_list(img=None):
     if img is None:
@@ -32,6 +38,8 @@ def get_odds_list(img=None):
         odds.append(num)
     print(odds)
     return odds
+
+
 
 def get_number(img):
     global DEBUG_NUM
@@ -65,27 +73,16 @@ def get_number(img):
         # the reference OCR-A images
         (x, y, w, h) = cv2.boundingRect(c)
         roi = img[y:y + h, x:x + w]
-        cv2.imwrite('{!s}.png'.format(DEBUG_NUM), roi)
-        DEBUG_NUM += 1
+        # cv2.imwrite('{!s}.png'.format(DEBUG_NUM), roi)
+        # DEBUG_NUM += 1
         cv2.rectangle(img2, (x, y), (x + w, y + h), (0,0,255), 2)
  
-        # initialize a list of template matching scores    
-        scores = {}
- 
-        # loop over the reference digit name and digit ROI
-        for key in range(10):
-            template = TEMPLATE_NUMBERS[str(key)]
-            # apply correlation-based template matching, take the
-            # score, and update the scores list
-            roi = cv2.resize(roi, template.shape[::-1])
-            score = cv2.matchTemplate(roi, template,
-                cv2.TM_CCOEFF)
-            score = np.max(score)
-            scores[str(key)] = score
- 
-        # the classification for the digit ROI will be the reference
-        # digit name with the *largest* template matching score
-        groupOutput.append(max(scores, key=scores.get))
+        # initialize a list of template matching scores
+        roi = cv2.resize(roi, (14, 28))    
+        outputs = model(torch.FloatTensor(roi).unsqueeze(0))
+        _, predicted = torch.max(outputs, 1)
+
+        groupOutput.append(str(int(predicted.data[0])))
     # cv2.imwrite('{!s}.png'.format(DEBUG_NUM), img2)
     # DEBUG_NUM += 1
     return groupOutput
